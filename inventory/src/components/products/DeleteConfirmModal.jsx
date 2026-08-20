@@ -1,11 +1,8 @@
 const DeleteConfirmModal = ({
-  product,
+  item,
   onConfirm,
   onCancel,
 }) => {
-  if (!product) {
-    return null;
-  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -15,7 +12,7 @@ const DeleteConfirmModal = ({
         {/* HEADER */}
 
         <h2 className="text-lg font-semibold text-gray-900">
-          Delete Product?
+          Delete Item?
         </h2>
 
         {/* MESSAGE */}
@@ -24,7 +21,7 @@ const DeleteConfirmModal = ({
           Are you sure you want to delete{" "}
 
           <span className="font-medium text-gray-900">
-            {product.name}
+            {item.name}
           </span>
 
           ? This action cannot be undone.
@@ -42,7 +39,6 @@ const DeleteConfirmModal = ({
           >
             Cancel
           </button>
-
 
           <button
             type="button"

@@ -214,7 +214,7 @@ const Products = () => {
       {/* Delete confirmation */}
       {deletingProduct && (
         <DeleteConfirmModal
-          product={deletingProduct}
+          item={deletingProduct}
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
         />
