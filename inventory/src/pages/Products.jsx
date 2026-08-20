@@ -1,237 +1,199 @@
 import { useState } from "react";
 import { IoIosAdd } from "react-icons/io";
+
+import productsData from "../data/products";
+
 import ProductFilters from "../components/products/ProductFilters";
 import ProductTable from "../components/products/ProductList";
+import ProductForm from "../components/products/ProductForm";
 
 const Products = () => {
 
-  //states
+  const [products, setProducts] = useState(productsData);
+  const [showForm, setShowForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
   const [sortBy, setSortBy] = useState("");
 
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Laptop",
-      sku: "LP001",
-      category: "Electronics",
-      price: 50000,
-      quantity: 10,
-      status: "In Stock",
-    },
-    {
-      id: 2,
-      name: "Mouse",
-      sku: "MS001",
-      category: "Accessories",
-      price: 800,
-      quantity: 25,
-      status: "In Stock",
-    },
-    {
-      id: 3,
-      name: "Keyboard",
-      sku: "KB001",
-      category: "Accessories",
-      price: 1200,
-      quantity: 4,
-      status: "Low Stock",
-    },
-    {
-      id: 4,
-      name: "Monitor",
-      sku: "MN001",
-      category: "Electronics",
-      price: 15000,
-      quantity: 0,
-      status: "Out of Stock",
-    },
-  ]);
-
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showView, setShowView] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
-
-  // view
-  const handleView = (product) => {
-    setSelectedProduct(product);
-    setShowView(true);
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+    setShowForm(true);
   };
 
-  // confirm Delete
-  const confirmDelete = () => {
+  const handleDelete = (product) => {
+    console.log("Delete:", product);
+  };
+
+  const handleAddProduct = (productData) => {
+    const newProduct = {
+      id: Date.now(),
+      ...productData,
+    };
+
+    setProducts((currentProducts) => [
+      ...currentProducts,
+      newProduct,
+    ]);
+
+    setShowForm(false);
+  };
+
+  const handleUpdateProduct = (updatedProduct) => {
     setProducts((currentProducts) =>
-      currentProducts.filter(
-        (product) => product.id !== selectedProduct.id
+      currentProducts.map((product) =>
+        product.id === editingProduct.id
+          ? {
+              ...updatedProduct,
+              id: editingProduct.id,
+            }
+          : product
       )
     );
 
-    setSelectedProduct(null);
-    setShowDelete(false);
-  }
+    setEditingProduct(null);
+    setShowForm(false);
+  };
 
-  // filter
-  const filteredProducts = products.filter((products) => {
-    return category === "" || products.category === category;
-  })
-  .filter((products) => {
-    return status === "" || products.status === status;
+  const filteredProducts = products.filter((product) => {
+
+    // Category filter
+    if (
+      category &&
+      product.category !== category
+    ) {
+      return false;
+    }
+
+
+    // Status filter
+    if (status) {
+
+      let productStatus;
+
+      if (product.quantity === 0) {
+        productStatus = "Out of Stock";
+      } else if (product.quantity <= 5) {
+        productStatus = "Low Stock";
+      } else {
+        productStatus = "In Stock";
+      }
+
+      if (productStatus !== status) {
+        return false;
+      }
+    }
+
+
+    return true;
   });
 
-  //sorting
+  const sortedProducts = [...filteredProducts];
+
   if (sortBy === "name") {
-    filteredProducts.sort((a,b) =>
-      a.price - b.price
-    )
-  }
-  if (sortBy === "quantity") {
-    filteredProducts.sort((a,b) =>
-      a.quantity - b.quantity
+    sortedProducts.sort((a, b) =>
+      a.name.localeCompare(b.name)
     );
   }
 
-// delete handle
-const handleDelete = (id) => {
-  setProducts((currentProducts) => 
-  currentProducts.filter((product) => product.id !==id)
-  );
-}
+  if (sortBy === "price") {
+    sortedProducts.sort(
+      (a, b) => a.price - b.price
+    );
+  }
+
+  if (sortBy === "quantity") {
+    sortedProducts.sort(
+      (a, b) => a.quantity - b.quantity
+    );
+  }
+
+  const handleClearFilters = () => {
+    setCategory("");
+    setStatus("");
+    setSortBy("");
+  };
+
+  const handleOpenAddForm = () => {
+    // Make sure form opens in Add mode
+    setEditingProduct(null);
+
+    setShowForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setEditingProduct(null);
+    setShowForm(false);
+  };
+
   return (
-    <div>
+    <div className="space-y-6">
 
-      {/* Header */}
+      {/* HEADER */}
+
       <div className="flex items-center justify-between">
-        <h3 className="text-2xl text-gray-900 font-sans">
-          Manage your Inventory Products
-        </h3>
 
-        <button className="flex items-center border border-gray-950 px-2 rounded-md text-gray-900">
+        <div>
+
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Products
+          </h1>
+
+          <p className="mt-1 text-sm text-gray-500">
+            Manage your inventory products
+          </p>
+
+        </div>
+
+        <button
+          onClick={handleOpenAddForm}
+          className="flex items-center gap-1 rounded-md border border-gray-900 px-3 py-2 text-sm hover:bg-gray-50"
+        >
           <IoIosAdd size={20} />
-          Add Products
+          Add Product
         </button>
+
       </div>
-      <div className="py-5 flex flex-col gap-4">
-        <ProductFilters 
-          category={category}
-          sortBy={status}
-          onCategoryChange={setCategory}
-          onStatusChange={setStatus}
-          onSortChange={setSortBy}
-        />
-        <ProductTable 
-        products={products}
-        onView={handleView} 
+
+      {/* FILTERS */}
+
+      <ProductFilters
+        category={category}
+        status={status}
+        sortBy={sortBy}
+
+        onCategoryChange={setCategory}
+        onStatusChange={setStatus}
+        onSortChange={setSortBy}
+
+        onClear={handleClearFilters}
+      />
+
+      {/* PRODUCT TABLE */}
+
+      <ProductTable
+        products={sortedProducts}
+        onEdit={handleEdit}
         onDelete={handleDelete}
+      />
+
+      {/* ADD / EDIT FORM */}
+
+      {showForm && (
+        <ProductForm
+          product={editingProduct}
+
+          onSubmit={
+            editingProduct
+              ? handleUpdateProduct
+              : handleAddProduct
+          }
+
+          onCancel={handleCloseForm}
         />
-
-        {showView && selectedProduct && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40">
-
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
-
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">
-                Product Details
-              </h2>
-
-              <button
-                onClick={() => setShowView(false)}
-                className="text-gray-500 hover:text-gray-900"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="mt-5 space-y-3">
-
-              <p>
-                <strong>Product:</strong>{" "}
-                {selectedProduct.name}
-              </p>
-
-              <p>
-                <strong>SKU:</strong>{" "}
-                {selectedProduct.sku}
-              </p>
-
-              <p>
-                <strong>Category:</strong>{" "}
-                {selectedProduct.category}
-              </p>
-
-              <p>
-                <strong>Price:</strong>{" "}
-                ₹{selectedProduct.price}
-              </p>
-
-              <p>
-                <strong>Quantity:</strong>{" "}
-                {selectedProduct.quantity}
-              </p>
-
-              <p>
-                <strong>Status:</strong>{" "}
-                {selectedProduct.status}
-              </p>
-
-            </div>
-
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={() => setShowView(false)}
-                className="rounded-md border px-4 py-2"
-              >
-                Close
-              </button>
-            </div>
-
-          </div>
-        </div>
       )}
 
-      {/* Delete Confirmation */}
-      {showDelete && selectedProduct && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40">
-
-          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
-
-            <h2 className="text-lg font-semibold text-gray-900">
-              Delete Product?
-            </h2>
-
-            <p className="mt-2 text-sm text-gray-500">
-              Are you sure you want to delete{" "}
-              <strong>{selectedProduct.name}</strong>?
-            </p>
-
-            <div className="mt-6 flex justify-end gap-3">
-
-              {/* Cancel */}
-              <button
-                onClick={() => {
-                  setSelectedProduct(null);
-                  setShowDelete(false);
-                }}
-                className="rounded-md border border-gray-300 px-4 py-2"
-              >
-                Cancel
-              </button>
-
-              {/* Confirm */}
-              <button
-                onClick={confirmDelete}
-                className="rounded-md bg-red-600 px-4 py-2 text-white"
-              >
-                Delete
-              </button>
-
-            </div>
-
-          </div>
-        </div>
-      )}
-      </div>
     </div>
   );
 };

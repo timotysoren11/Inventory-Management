@@ -16,9 +16,9 @@ function App() {
         <Route path='/' element={<Dashboard />} />
         <Route path='/products' element={<Products />} />
         <Route path='/category' element={<Categories />} />
-        <Route path='./supplier' element={<Suppliers />} />
+        <Route path='/supplier' element={<Suppliers />} />
         <Route path='/purchase' element={<Purchases />} />
-        <Route path='./sale' element={<Sales />} />
+        <Route path='/sale' element={<Sales />} />
       </Route>
     </Routes>
   );
