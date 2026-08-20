@@ -6,38 +6,36 @@ import Topbar from "../components/Topbar";
 
 function DashboardLayout() {
 
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    return (
-        <div className="flex min-h-screen bg-gray-50">
+  return (
+    <div className="flex h-screen overflow-hidden bg-gray-50">
 
-            {/* Sidebar */}
-            <Sidebar
-                sidebarOpen={sidebarOpen}
-                setSidebarOpen={setSidebarOpen}
-            />
+      {/* Sidebar */}
+      <Sidebar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
 
+      {/* Main Area */}
+      <div className="flex min-w-0 flex-1 flex-col">
 
-            {/* Main Area */}
-            <div className="flex min-w-0 flex-1 flex-col">
+        {/* Topbar */}
+        <Topbar
+          setSidebarOpen={setSidebarOpen}
+        />
 
-                {/* Topbar */}
-                <Topbar
-                    setSidebarOpen={setSidebarOpen}
-                />
+        {/* Page Content */}
+        <main className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
 
+          <Outlet />
 
-                {/* Page Content */}
-                <main className="flex-1 p-4 sm:p-6 lg:p-8">
+        </main>
 
-                    <Outlet />
+      </div>
 
-                </main>
-
-            </div>
-
-        </div>
-    );
+    </div>
+  );
 }
 
 export default DashboardLayout;

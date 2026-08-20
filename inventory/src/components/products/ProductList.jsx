@@ -6,6 +6,7 @@ const PRODUCTS_PER_PAGE = 10;
 
 const ProductTable = ({
   products,
+  categories,
   onEdit,
   onDelete,
 }) => {
@@ -106,7 +107,7 @@ const ProductTable = ({
                   {/* CATEGORY */}
 
                   <td className="px-5 py-4 text-gray-500">
-                    {product.category}
+                    {categories.find((category) => category.id === product.categoryId)?.name}
                   </td>
 
                   {/* PRICE */}

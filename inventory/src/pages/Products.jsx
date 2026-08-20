@@ -2,6 +2,7 @@ import { useState } from "react";
 import { IoIosAdd } from "react-icons/io";
 
 import productsData from "../data/products";
+import categoriesData from "../data/categories";
 
 import ProductFilters from "../components/products/ProductFilters";
 import ProductTable from "../components/products/ProductList";
@@ -19,6 +20,8 @@ const Products = () => {
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
   const [sortBy, setSortBy] = useState("");
+
+  const categories = categoriesData;
 
   const handleEdit = (product) => {
     setEditingProduct(product);
@@ -78,7 +81,7 @@ const Products = () => {
     // Category filter
     if (
       category &&
-      product.category !== category
+      product.categoryId !== Number(category)
     ) {
       return false;
     }
@@ -176,7 +179,7 @@ const Products = () => {
       {/* FILTERS */}
 
       <ProductFilters
-        category={category}
+        category={categories}
         status={status}
         sortBy={sortBy}
 
@@ -191,6 +194,7 @@ const Products = () => {
 
       <ProductTable
         products={sortedProducts}
+        categories={categories}
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
@@ -200,6 +204,7 @@ const Products = () => {
       {showForm && (
         <ProductForm
           product={editingProduct}
+          categories={categories}
 
           onSubmit={
             editingProduct

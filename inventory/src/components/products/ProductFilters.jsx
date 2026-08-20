@@ -24,7 +24,7 @@ const ProductFilters = ({
         {categories.map((category) => (
           <option 
             key={category.id}
-            value={category.name}
+            value={category.id}
           />
         ))}
       </select>
