@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import categories from "../../data/categories";
 
 const emptyProduct = {
   name: "",
@@ -13,24 +15,25 @@ const ProductForm = ({
   onSubmit,
   onCancel,
 }) => {
-  const [formData, setFormData] = useState(emptyProduct);
+
+  const [formData, setFormData] = useState(
+    product
+      ? {
+          name: product.name,
+          sku: product.sku,
+          category: product.category,
+          price: product.price,
+          quantity: product.quantity,
+        }
+      : emptyProduct
+  );
 
   const isEdit = Boolean(product);
 
-  // Load product data when editing
-  useEffect(() => {
-    if (product) {
-      setFormData({
-        name: product.name,
-        sku: product.sku,
-        category: product.category,
-        price: product.price,
-        quantity: product.quantity,
-      });
-    } else {
-      setFormData(emptyProduct);
-    }
-  }, [product]);
+
+  // =========================================
+  // HANDLE INPUT CHANGE
+  // =========================================
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,6 +43,11 @@ const ProductForm = ({
       [name]: value,
     }));
   };
+
+
+  // =========================================
+  // HANDLE SUBMIT
+  // =========================================
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -51,15 +59,18 @@ const ProductForm = ({
     });
   };
 
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
 
       <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
 
-        {/* Header */}
+        {/* HEADER */}
+
         <div className="flex items-center justify-between">
 
           <div>
+
             <h2 className="text-xl font-semibold text-gray-900">
               {isEdit ? "Edit Product" : "Add Product"}
             </h2>
@@ -69,6 +80,7 @@ const ProductForm = ({
                 ? "Update product information"
                 : "Add a new product to your inventory"}
             </p>
+
           </div>
 
           <button
@@ -81,14 +93,18 @@ const ProductForm = ({
 
         </div>
 
-        {/* Form */}
+
+        {/* FORM */}
+
         <form
           onSubmit={handleSubmit}
           className="mt-6 space-y-4"
         >
 
-          {/* Name */}
+          {/* PRODUCT NAME */}
+
           <div>
+
             <label className="text-sm font-medium text-gray-700">
               Product Name
             </label>
@@ -102,10 +118,14 @@ const ProductForm = ({
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-gray-900"
               required
             />
+
           </div>
 
+
           {/* SKU */}
+
           <div>
+
             <label className="text-sm font-medium text-gray-700">
               SKU
             </label>
@@ -119,10 +139,14 @@ const ProductForm = ({
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-gray-900"
               required
             />
+
           </div>
 
-          {/* Category */}
+
+          {/* CATEGORY */}
+
           <div>
+
             <label className="text-sm font-medium text-gray-700">
               Category
             </label>
@@ -131,25 +155,32 @@ const ProductForm = ({
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none"
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-gray-900"
               required
             >
+
               <option value="">
                 Select category
               </option>
 
-              <option value="Electronics">
-                Electronics
-              </option>
+              {categories.map((category) => (
+                <option
+                  key={category.id}
+                  value={category.name}
+                >
+                  {category.name}
+                </option>
+              ))}
 
-              <option value="Accessories">
-                Accessories
-              </option>
             </select>
+
           </div>
 
-          {/* Price */}
+
+          {/* PRICE */}
+
           <div>
+
             <label className="text-sm font-medium text-gray-700">
               Price
             </label>
@@ -164,10 +195,14 @@ const ProductForm = ({
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-gray-900"
               required
             />
+
           </div>
 
-          {/* Quantity */}
+
+          {/* QUANTITY */}
+
           <div>
+
             <label className="text-sm font-medium text-gray-700">
               Quantity
             </label>
@@ -182,9 +217,12 @@ const ProductForm = ({
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-gray-900"
               required
             />
+
           </div>
 
-          {/* Buttons */}
+
+          {/* BUTTONS */}
+
           <div className="flex justify-end gap-3 pt-4">
 
             <button
@@ -199,7 +237,9 @@ const ProductForm = ({
               type="submit"
               className="rounded-md bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-800"
             >
-              {isEdit ? "Update Product" : "Add Product"}
+              {isEdit
+                ? "Update Product"
+                : "Add Product"}
             </button>
 
           </div>

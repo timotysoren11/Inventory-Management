@@ -1,3 +1,6 @@
+import categories from "../../data/categories";
+
+
 const ProductFilters = ({
   category,
   status,
@@ -7,24 +10,23 @@ const ProductFilters = ({
   onSortChange,
   onClear,
 }) => {
+
   return (
     <div className="flex flex-wrap items-center gap-3">
 
       {/* Category */}
       <select
         value={category}
-        onChange={(e) =>
-          onCategoryChange(e.target.value)
-        }
+        onChange={(e) => onCategoryChange(e.target.value)}
         className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
       >
         <option value="">All Categories</option>
-        <option value="Electronics">
-          Electronics
-        </option>
-        <option value="Accessories">
-          Accessories
-        </option>
+        {categories.map((category) => (
+          <option 
+            key={category.id}
+            value={category.name}
+          />
+        ))}
       </select>
 
       {/* Status */}

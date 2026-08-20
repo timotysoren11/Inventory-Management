@@ -7,11 +7,14 @@ import ProductFilters from "../components/products/ProductFilters";
 import ProductTable from "../components/products/ProductList";
 import ProductForm from "../components/products/ProductForm";
 
+import DeleteConfirmModal from "../components/products/DeleteConfirmModal";
+
 const Products = () => {
 
   const [products, setProducts] = useState(productsData);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [deletingProduct, setDeletingProduct] = useState(null);
 
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
@@ -23,8 +26,22 @@ const Products = () => {
   };
 
   const handleDelete = (product) => {
-    console.log("Delete:", product);
+    setDeletingProduct(product);
   };
+
+  const handleConfirmDelete = () =>{
+    setProducts((currentProducts) =>
+      currentProducts.filter(
+        (product) => product.id !== deletingProduct.id
+      )
+    );
+
+    setDeletingProduct(null);
+  };
+
+  const handleCancelDelete = () => {
+    setDeletingProduct(null);
+  }
 
   const handleAddProduct = (productData) => {
     const newProduct = {
@@ -191,6 +208,15 @@ const Products = () => {
           }
 
           onCancel={handleCloseForm}
+        />
+      )}
+
+      {/* Delete confirmation */}
+      {deletingProduct && (
+        <DeleteConfirmModal
+          product={deletingProduct}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
         />
       )}
 
